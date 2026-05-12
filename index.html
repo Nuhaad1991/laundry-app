@@ -26,11 +26,18 @@
       align-items: center;
       justify-content: center;
       transition: all 0.2s ease;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     }
-    .external-fullscreen:hover {
-      background: #007bff;
-      transform: scale(1.05);
+    .external-fullscreen:hover { background: #007bff; transform: scale(1.05); }
+    /* Temporary overlay to capture first click on iframe area */
+    .click-capture-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      z-index: 10000;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -41,18 +48,16 @@
     allowfullscreen
     allow="fullscreen">
   </iframe>
-
   <button id="externalFullscreenBtn" class="external-fullscreen" title="Full screen">⤢</button>
+  <!-- Temporary overlay for first click -->
+  <div id="firstClickOverlay" class="click-capture-overlay"></div>
 
   <script>
     const baseUrl = 'https://script.google.com/macros/s/AKfycbwVRmZjXQi9MxpyoaQns4FQnR2dYEo0qcfN08iPBrWwxvyFYL5hYLcDng4MDQMmWKve/exec';
     const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
     const iframe = document.getElementById('launcherIframe');
-    
-    // Force mobile version on mobile devices
     iframe.src = isMobile ? baseUrl + '?mode=mobile' : baseUrl;
 
-    // Full‑screen on entire document (works first click)
     const btn = document.getElementById('externalFullscreenBtn');
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
@@ -66,6 +71,22 @@
     document.addEventListener('fullscreenchange', () => {
       btn.textContent = document.fullscreenElement ? '✕' : '⤢';
       btn.title = document.fullscreenElement ? 'Exit full screen' : 'Full screen';
+    });
+
+    // --- First click anywhere (captured by overlay) ---
+    const overlay = document.getElementById('firstClickOverlay');
+    overlay.addEventListener('click', function onFirstClick() {
+      // Remove overlay immediately
+      overlay.removeEventListener('click', onFirstClick);
+      overlay.remove();
+      // Enter full‑screen
+      document.documentElement.requestFullscreen().catch(console.warn);
+    });
+    // Also for touch devices
+    overlay.addEventListener('touchstart', function onFirstTouch() {
+      overlay.removeEventListener('touchstart', onFirstTouch);
+      overlay.remove();
+      document.documentElement.requestFullscreen().catch(console.warn);
     });
   </script>
 </body>
