@@ -24,10 +24,30 @@
   </style>
 </head>
 <body>
-  <iframe 
+  <iframe id="launcherIframe" 
     src="https://script.google.com/macros/s/AKfycbzjbKeRecOiAnFG-OnDTlZ4YEbDG3LMzCkAXIWqeqPqiGBsKRiQHHHh3Py55eNnY52m/exec"
     allowfullscreen
     allow="fullscreen">
   </iframe>
+
+  <script>
+    const iframe = document.getElementById('launcherIframe');
+    
+    // Listen for messages from the iframe
+    window.addEventListener('message', function(event) {
+      // Optional: verify origin for security (replace with your Apps Script domain)
+      // if (event.origin !== 'https://script.google.com') return;
+      
+      if (event.data === 'requestFullscreen') {
+        if (iframe.requestFullscreen) {
+          iframe.requestFullscreen();
+        } else if (iframe.webkitRequestFullscreen) { /* Safari */
+          iframe.webkitRequestFullscreen();
+        } else if (iframe.msRequestFullscreen) { /* IE/Edge */
+          iframe.msRequestFullscreen();
+        }
+      }
+    });
+  </script>
 </body>
 </html>
