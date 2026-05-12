@@ -21,38 +21,79 @@
       height: 100%;
       border: none;
     }
+    /* Floating full‑screen button */
+    .external-fullscreen {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .external-fullscreen:hover {
+      background: #007bff;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
+  <!-- Detect mobile device and append ?mode=mobile automatically -->
   <iframe id="launcherIframe" 
     src=""
     allowfullscreen
     allow="fullscreen">
   </iframe>
 
+  <button id="externalFullscreenBtn" class="external-fullscreen" title="Full screen">⤢</button>
+
   <script>
-    // Detect mobile devices via user agent (you can refine the regex as needed)
+    // --- Device detection for mobile version ---
     const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
-    
     const iframe = document.getElementById('launcherIframe');
-    const baseUrl = 'https://script.google.com/macros/s/AKfycbyiqxYZD6_wEVCYx8q6C9EJKdx58lLuiskQB046Z_NHoON2kvNeNdycmiDAwYOCo7aT/exec';
+    const baseUrl = 'https://script.google.com/macros/s/AKfycbwVRmZjXQi9MxpyoaQns4FQnR2dYEo0qcfN08iPBrWwxvyFYL5hYLcDng4MDQMmWKve/exec';
     
-    // Set the iframe src based on device type
     iframe.src = isMobile ? baseUrl + '?mode=mobile' : baseUrl;
-    
-    // Listen for full‑screen requests from the embedded app
-    window.addEventListener('message', function(event) {
-      // Optional: verify the origin for security (uncomment if needed)
-      // if (event.origin !== 'https://script.google.com') return;
-      
-      if (event.data === 'requestFullscreen') {
+
+    // --- External full‑screen button logic ---
+    const btn = document.getElementById('externalFullscreenBtn');
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        // Request full‑screen on the iframe element
         if (iframe.requestFullscreen) {
-          iframe.requestFullscreen();
+          iframe.requestFullscreen().catch(err => console.warn(err));
         } else if (iframe.webkitRequestFullscreen) { // Safari
           iframe.webkitRequestFullscreen();
-        } else if (iframe.msRequestFullscreen) {    // IE/Edge
+        } else if (iframe.msRequestFullscreen) {     // IE/Edge
           iframe.msRequestFullscreen();
         }
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    btn.addEventListener('click', toggleFullscreen);
+
+    // Update button icon when full‑screen changes
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        btn.textContent = '✕';
+        btn.title = 'Exit full screen';
+      } else {
+        btn.textContent = '⤢';
+        btn.title = 'Full screen';
       }
     });
   </script>
