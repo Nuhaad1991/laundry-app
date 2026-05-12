@@ -5,23 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Laundry Management System</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body, html {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    /* Full‑screen button – top‑right, smaller, semi‑transparent */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { width: 100%; height: 100%; overflow: hidden; }
+    iframe { width: 100%; height: 100%; border: none; }
     .external-fullscreen {
       position: fixed;
       top: 16px;
@@ -45,14 +31,13 @@
     .external-fullscreen:hover {
       background: #007bff;
       transform: scale(1.05);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
   </style>
 </head>
 <body>
-  <!-- Detect mobile device and append ?mode=mobile automatically -->
   <iframe id="launcherIframe" 
     src=""
+    referrerpolicy="no-referrer"
     allowfullscreen
     allow="fullscreen">
   </iframe>
@@ -60,41 +45,27 @@
   <button id="externalFullscreenBtn" class="external-fullscreen" title="Full screen">⤢</button>
 
   <script>
-    // --- Device detection for mobile version ---
+    const baseUrl = 'https://script.google.com/macros/s/AKfycbwVRmZjXQi9MxpyoaQns4FQnR2dYEo0qcfN08iPBrWwxvyFYL5hYLcDng4MDQMmWKve/exec';
     const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
     const iframe = document.getElementById('launcherIframe');
-    const baseUrl = 'https://script.google.com/macros/s/AKfycbwVRmZjXQi9MxpyoaQns4FQnR2dYEo0qcfN08iPBrWwxvyFYL5hYLcDng4MDQMmWKve/exec';
     
+    // Force mobile version on mobile devices
     iframe.src = isMobile ? baseUrl + '?mode=mobile' : baseUrl;
 
-    // --- External full‑screen button (works on first click) ---
+    // Full‑screen on entire document (works first click)
     const btn = document.getElementById('externalFullscreenBtn');
-
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
-        if (iframe.requestFullscreen) {
-          iframe.requestFullscreen().catch(err => console.warn(err));
-        } else if (iframe.webkitRequestFullscreen) { // Safari
-          iframe.webkitRequestFullscreen();
-        } else if (iframe.msRequestFullscreen) {     // IE/Edge
-          iframe.msRequestFullscreen();
-        }
+        document.documentElement.requestFullscreen().catch(console.warn);
       } else {
         document.exitFullscreen();
       }
     }
-
     btn.addEventListener('click', toggleFullscreen);
 
-    // Update button icon when full‑screen changes
     document.addEventListener('fullscreenchange', () => {
-      if (document.fullscreenElement) {
-        btn.textContent = '✕';
-        btn.title = 'Exit full screen';
-      } else {
-        btn.textContent = '⤢';
-        btn.title = 'Full screen';
-      }
+      btn.textContent = document.fullscreenElement ? '✕' : '⤢';
+      btn.title = document.fullscreenElement ? 'Exit full screen' : 'Full screen';
     });
   </script>
 </body>
