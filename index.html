@@ -21,30 +21,31 @@
       height: 100%;
       border: none;
     }
-    /* Floating full‑screen button */
+    /* Full‑screen button – top‑right, smaller, semi‑transparent */
     .external-fullscreen {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.7);
+      top: 16px;
+      right: 16px;
+      background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(4px);
       color: white;
       border: none;
       border-radius: 50%;
-      width: 56px;
-      height: 56px;
-      font-size: 28px;
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
       cursor: pointer;
       z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     }
     .external-fullscreen:hover {
       background: #007bff;
       transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
   </style>
 </head>
@@ -66,12 +67,11 @@
     
     iframe.src = isMobile ? baseUrl + '?mode=mobile' : baseUrl;
 
-    // --- External full‑screen button logic ---
+    // --- External full‑screen button (works on first click) ---
     const btn = document.getElementById('externalFullscreenBtn');
 
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
-        // Request full‑screen on the iframe element
         if (iframe.requestFullscreen) {
           iframe.requestFullscreen().catch(err => console.warn(err));
         } else if (iframe.webkitRequestFullscreen) { // Safari
